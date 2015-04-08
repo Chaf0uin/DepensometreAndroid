@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Depensometre.iml" filepath="$PROJECT_DIR$/Depensometre.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DepensometreAndroid.iml" filepath="$PROJECT_DIR$/DepensometreAndroid.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/common/common.iml" filepath="$PROJECT_DIR$/common/common.iml" />
       <module fileurl="file://$PROJECT_DIR$/domain/domain.iml" filepath="$PROJECT_DIR$/domain/domain.iml" />
@@ -10,4 +10,3 @@
     </modules>
   </component>
 </project>
-
