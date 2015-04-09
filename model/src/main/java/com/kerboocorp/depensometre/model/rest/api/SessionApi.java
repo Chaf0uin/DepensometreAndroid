@@ -7,6 +7,7 @@ import java.util.List;
 
 import retrofit.Callback;
 import retrofit.http.Field;
+import retrofit.http.FormUrlEncoded;
 import retrofit.http.POST;
 
 /**
@@ -14,6 +15,8 @@ import retrofit.http.POST;
  */
 public interface SessionApi {
 
+    @FormUrlEncoded
     @POST("/session")
     void login(@Field("Email") String email, @Field("Password") String password, Callback<AccessToken> callback);
+
 }

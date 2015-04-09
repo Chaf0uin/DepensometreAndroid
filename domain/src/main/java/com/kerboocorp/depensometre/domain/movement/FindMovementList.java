@@ -13,6 +13,8 @@ public interface FindMovementList extends UseCase {
 
     public void onMovementListReceived(MovementList response);
 
+    public void setMonth(String month, String year);
+
     public void requestMovementList();
 
     public void sendMovementListToPresenter(MovementList response);

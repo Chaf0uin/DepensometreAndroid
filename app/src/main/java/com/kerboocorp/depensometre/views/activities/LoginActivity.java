@@ -1,9 +1,99 @@
 package com.kerboocorp.depensometre.views.activities;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+
+import com.kerboocorp.depensometre.R;
+import com.kerboocorp.depensometre.model.entities.MovementList;
+import com.kerboocorp.depensometre.mvp.presenters.LoginPresenter;
+import com.kerboocorp.depensometre.mvp.presenters.MovementListPresenter;
+import com.kerboocorp.depensometre.mvp.views.LoginView;
+import com.kerboocorp.depensometre.views.adapters.MovementAdapter;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
 /**
  * Created by cgo on 8/04/2015.
  */
-public class LoginActivity extends ActionBarActivity {
+public class LoginActivity extends ActionBarActivity implements LoginView {
+
+    private LoginPresenter loginPresenter;
+
+    @InjectView(R.id.emailEditText)
+    EditText emailEditText;
+    @InjectView(R.id.passwordEditText)
+    EditText passwordEditText;
+    @InjectView(R.id.loginButton)
+    Button loginButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+        ButterKnife.inject(this);
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                login();
+            }
+        });
+
+        if (savedInstanceState == null) {
+            loginPresenter = new LoginPresenter(this);
+        } else {
+//        MoviesWrapper moviesWrapper = (MoviesWrapper) savedInstanceState
+//                .getSerializable("movies_wrapper");
+//
+//        mMoviesPresenter = new MoviesPresenter(this, moviesWrapper);
+//    }
+        }
+    }
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void hideLoading() {
+
+    }
+
+    @Override
+    public void showError(String error) {
+
+    }
+
+    @Override
+    public void hideError() {
+
+    }
+
+    @Override
+    public void login() {
+        loginPresenter.login();
+    }
+
+    @Override
+    public void startMovementListActivity() {
+        Intent intent = new Intent(this, MovementListActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
+    }
 }

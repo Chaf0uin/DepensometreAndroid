@@ -23,4 +23,14 @@ public interface MovementListView extends View {
     boolean isMovementListEmpty ();
 
     void appendMovementList (MovementList movementList);
+
+    void selectMonth();
+
+    void setTitle(String title);
+
+    void closeDrawer();
+
+    void setSelectedMonthSpinner(int month, int year);
+
+    void startEditMovementActivity(boolean isOutput);
 }

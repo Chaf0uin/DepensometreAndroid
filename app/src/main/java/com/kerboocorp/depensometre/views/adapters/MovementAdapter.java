@@ -1,6 +1,7 @@
 package com.kerboocorp.depensometre.views.adapters;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,8 @@ public class MovementAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 	private static final int TYPE_FOOTER = 0;
     private static final int TYPE_ITEM = 1;
 
-    private SimpleDateFormat fullDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    private SimpleDateFormat fullDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     private DecimalFormat df = new DecimalFormat("##.00");
     private List<Movement> movementList;
     private Context context;
@@ -106,8 +108,12 @@ public class MovementAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     		MovementViewHolder movementViewHolder = (MovementViewHolder) viewHolder;
     		Movement movement = movementList.get(i);
 
-    		//movementViewHolder.date.setText(fullDateFormat.format(movement.getDate()));
-    		movementViewHolder.name.setText(movement.getName());
+            try {
+                movementViewHolder.date.setText(simpleDateFormat.format(fullDateFormat.parse(movement.getDate())));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            movementViewHolder.name.setText(movement.getName());
     		
     		if (movement.getMovementType()) {
     			//movementViewHolder.amount.setText("+" + df.format(movement.getAmount())  + " €");

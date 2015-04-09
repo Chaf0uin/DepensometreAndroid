@@ -1,37 +1,32 @@
 package com.kerboocorp.depensometre.mvp.presenters;
 
-import android.content.Intent;
-
 import com.kerboocorp.depensometre.common.utils.BusProvider;
+import com.kerboocorp.depensometre.domain.movement.impl.SaveMovementController;
 import com.kerboocorp.depensometre.domain.session.impl.LoginController;
-import com.kerboocorp.depensometre.model.entities.AccessToken;
+import com.kerboocorp.depensometre.model.rest.MovementRestSource;
 import com.kerboocorp.depensometre.model.rest.SessionRestSource;
+import com.kerboocorp.depensometre.mvp.views.EditMovementView;
 import com.kerboocorp.depensometre.mvp.views.LoginView;
-import com.squareup.otto.Subscribe;
 
 /**
- * Created by chris on 8/04/15.
+ * Created by cgo on 9/04/2015.
  */
-public class LoginPresenter extends Presenter {
+public class EditMovementPresenter extends Presenter {
 
-    private final LoginView loginView;
-    private LoginController loginController;
+    private final EditMovementView editMovementView;
+    private SaveMovementController saveMovementController;
 
     private boolean isLoading = false;
     private boolean registered;
 
-    public LoginPresenter(LoginView loginView) {
-        this.loginView = loginView;
-        loginController = new LoginController(SessionRestSource.getInstance(), BusProvider.getUIBusInstance());
+    public EditMovementPresenter(EditMovementView editMovementView) {
+        this.editMovementView = editMovementView;
+        saveMovementController = new SaveMovementController(MovementRestSource.getInstance(), BusProvider.getUIBusInstance());
+
     }
 
-    public void login() {
-        loginController.execute();
-    }
+    public void saveMovement() {
 
-    @Subscribe
-    public void onAccessTokenReceived(AccessToken response) {
-        loginView.startMovementListActivity();
     }
 
     @Override
@@ -40,7 +35,6 @@ public class LoginPresenter extends Presenter {
             BusProvider.getUIBusInstance().register(this);
             registered = true;
         }
-
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.kerboocorp.depensometre.domain.session.impl;
 
 import com.kerboocorp.depensometre.common.utils.BusProvider;
 import com.kerboocorp.depensometre.domain.session.Login;
+import com.kerboocorp.depensometre.model.SessionDataSource;
 import com.kerboocorp.depensometre.model.entities.AccessToken;
 import com.kerboocorp.depensometre.model.rest.SessionRestSource;
 import com.squareup.otto.Bus;
@@ -11,17 +12,17 @@ import com.squareup.otto.Bus;
  */
 public class LoginController implements Login {
 
-    private final SessionRestSource sessionRestSource;
+    private final SessionDataSource sessionDataSource;
     private final Bus uiBus;
 
-    public LoginController(SessionRestSource sessionRestSource, Bus uiBus) {
-        if (sessionRestSource == null)
-            throw new IllegalArgumentException("MovementRestSource cannot be null");
+    public LoginController(SessionDataSource sessionDataSource, Bus uiBus) {
+        if (sessionDataSource == null)
+            throw new IllegalArgumentException("SessionDataSource cannot be null");
 
         if (uiBus == null)
             throw new IllegalArgumentException("Bus cannot be null");
 
-        this.sessionRestSource = sessionRestSource;
+        this.sessionDataSource = sessionDataSource;
         this.uiBus = uiBus;
 
         BusProvider.getRestBusInstance().register(this);
@@ -39,7 +40,7 @@ public class LoginController implements Login {
 
     @Override
     public void requestAccessToken() {
-        sessionRestSource.login("darkyunsung@gmail.com", "0Mgdessous");
+        sessionDataSource.login("darkyunsung@gmail.com", "0Mgdessous");
     }
 
     @Override
