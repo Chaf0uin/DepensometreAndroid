@@ -1,7 +1,10 @@
 package com.kerboocorp.depensometre.mvp.presenters;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 
+import com.kerboocorp.depensometre.R;
 import com.kerboocorp.depensometre.common.utils.BusProvider;
 import com.kerboocorp.depensometre.domain.session.impl.LoginController;
 import com.kerboocorp.depensometre.model.entities.AccessToken;
@@ -25,12 +28,19 @@ public class LoginPresenter extends Presenter {
         loginController = new LoginController(SessionRestSource.getInstance(), BusProvider.getUIBusInstance());
     }
 
-    public void login() {
+    public void login(String email, String password) {
+        loginController.setEmailAndPassword(email, password);
         loginController.execute();
     }
 
     @Subscribe
     public void onAccessTokenReceived(AccessToken response) {
+        SharedPreferences sharedPref = loginView.getContext().getSharedPreferences(loginView.getContext().getString(R.string.app_full_name), Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(loginView.getContext().getString(R.string.access_token), response.getToken());
+        editor.commit();
+
         loginView.startMovementListActivity();
     }
 

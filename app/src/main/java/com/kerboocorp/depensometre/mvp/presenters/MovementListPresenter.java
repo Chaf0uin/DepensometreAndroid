@@ -1,5 +1,8 @@
 package com.kerboocorp.depensometre.mvp.presenters;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.kerboocorp.depensometre.R;
 import com.kerboocorp.depensometre.common.utils.BusProvider;
 import com.kerboocorp.depensometre.domain.movement.impl.FindMovementListController;
@@ -60,6 +63,11 @@ public class MovementListPresenter extends Presenter {
             String year = String.valueOf(cal.get(Calendar.YEAR));
             NumberFormat formatter = new DecimalFormat("00");
             String month = formatter.format(cal.get(Calendar.MONTH) + 1);
+
+            SharedPreferences sharedPref = movementListView.getContext().getSharedPreferences(movementListView.getContext().getString(R.string.app_full_name), Context.MODE_PRIVATE);
+            String accessToken = sharedPref.getString(movementListView.getContext().getString(R.string.access_token), "");
+
+            findMovementListController.setAccessToken(accessToken);
             findMovementListController.setMonth(month, year);
             findMovementListController.execute();
 

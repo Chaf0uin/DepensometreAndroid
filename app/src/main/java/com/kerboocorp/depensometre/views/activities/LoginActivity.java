@@ -61,6 +61,19 @@ public class LoginActivity extends ActionBarActivity implements LoginView {
     }
 
     @Override
+    protected void onStop() {
+
+        super.onStop();
+        loginPresenter.stop();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        loginPresenter.start();
+    }
+
+    @Override
     public void showLoading() {
 
     }
@@ -82,7 +95,7 @@ public class LoginActivity extends ActionBarActivity implements LoginView {
 
     @Override
     public void login() {
-        loginPresenter.login();
+        loginPresenter.login(emailEditText.getText().toString(), passwordEditText.getText().toString());
     }
 
     @Override
