@@ -6,6 +6,7 @@ import com.kerboocorp.depensometre.model.SessionDataSource;
 import com.kerboocorp.depensometre.model.entities.AccessToken;
 import com.kerboocorp.depensometre.model.rest.SessionRestSource;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 /**
  * Created by chris on 8/04/15.
@@ -14,6 +15,9 @@ public class LoginController implements Login {
 
     private final SessionDataSource sessionDataSource;
     private final Bus uiBus;
+
+    private String email;
+    private String password;
 
     public LoginController(SessionDataSource sessionDataSource, Bus uiBus) {
         if (sessionDataSource == null)
@@ -33,6 +37,7 @@ public class LoginController implements Login {
         requestAccessToken();
     }
 
+    @Subscribe
     @Override
     public void onAccessTokenReceived(AccessToken response) {
         sendAccessTokenToPresenter(response);
@@ -40,7 +45,7 @@ public class LoginController implements Login {
 
     @Override
     public void requestAccessToken() {
-        sessionDataSource.login("darkyunsung@gmail.com", "0Mgdessous");
+        sessionDataSource.login(email, password);
     }
 
     @Override
@@ -51,6 +56,12 @@ public class LoginController implements Login {
     @Override
     public void unRegister() {
         BusProvider.getRestBusInstance().unregister(this);
+    }
+
+    @Override
+    public void setEmailAndPassword(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 
 }

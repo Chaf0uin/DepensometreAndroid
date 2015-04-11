@@ -8,4 +8,14 @@ public interface EditMovementView extends View {
     void cancel();
 
     void save();
+
+    void setTitle(String title);
+
+    void finish();
+
+    void setDate(String date);
+
+    void showDialog();
+
+    void hideDialog();
 }

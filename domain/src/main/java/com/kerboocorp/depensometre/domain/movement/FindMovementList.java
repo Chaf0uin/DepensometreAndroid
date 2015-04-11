@@ -15,6 +15,8 @@ public interface FindMovementList extends UseCase {
 
     public void setMonth(String month, String year);
 
+    public void setAccessToken(String accessToken);
+
     public void requestMovementList();
 
     public void sendMovementListToPresenter(MovementList response);

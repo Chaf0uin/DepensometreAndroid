@@ -12,6 +12,8 @@ public interface SaveMovement extends UseCase {
 
     public void setMovement(Movement movement);
 
+    public void setAccessToken(String accessToken);
+
     public void saveMovement();
 
     public void sendMovementToPresenter(Movement response);

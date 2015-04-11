@@ -10,4 +10,8 @@
     <string name="password">Password</string>
     <string name="access_token">accessToken</string>
 
+    <string name="action_save">Enregistrer</string>
+    <string name="dialog_saving">Enregistrement...</string>
+
+
 </resources>

@@ -29,6 +29,7 @@ public class MovementListPresenter extends Presenter {
     private boolean isLoading = false;
     private boolean registered;
 
+
     public MovementListPresenter(MovementListView movementListView) {
         this.movementListView = movementListView;
         findMovementListController = new FindMovementListController(MovementRestSource.getInstance(), BusProvider.getUIBusInstance());
@@ -112,4 +113,5 @@ public class MovementListPresenter extends Presenter {
         movementListView.setTitle(movementListView.getContext().getResources().getStringArray(R.array.month)[month] + " " + selectedYear);
 
     }
+
 }

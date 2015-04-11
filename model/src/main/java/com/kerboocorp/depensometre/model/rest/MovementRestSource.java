@@ -41,8 +41,8 @@ public class MovementRestSource implements MovementDataSource {
     }
 
     @Override
-    public void findMovementList(String year, String month) {
-        movementApi.findMovementList("Jp4DpabQjx89jnw7kep4", year, month, new Callback<List<Movement>>() {
+    public void findMovementList(String accessToken, String year, String month) {
+        movementApi.findMovementList(accessToken, year, month, new Callback<List<Movement>>() {
             @Override
             public void success(List<Movement> movements, Response response) {
                 BusProvider.getRestBusInstance().post(new MovementList(movements));
@@ -57,8 +57,20 @@ public class MovementRestSource implements MovementDataSource {
     }
 
     @Override
-    public void saveMovement(Movement movement) {
+    public void saveMovement(String accessToken, Movement movement) {
         if (movement.getId() == null) {
+            movementApi.insertMovement(accessToken, movement, new Callback<Movement>() {
+                @Override
+                public void success(Movement movement, Response response) {
+                    BusProvider.getRestBusInstance().post(movement);
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    System.out.printf("[DEBUG] MovementRestSource failure - " + error.getMessage());
+                    BusProvider.getRestBusInstance().post(error);
+                }
+            });
 
         } else {
 

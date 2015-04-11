@@ -7,7 +7,7 @@ import com.kerboocorp.depensometre.model.entities.Movement;
  */
 public interface MovementDataSource {
 
-    public void findMovementList(String year, String month);
+    public void findMovementList(String accessToken, String year, String month);
 
-    public void saveMovement(Movement movement);
+    public void saveMovement(String accessToken, Movement movement);
 }

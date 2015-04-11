@@ -5,6 +5,7 @@ import com.kerboocorp.depensometre.domain.movement.SaveMovement;
 import com.kerboocorp.depensometre.model.MovementDataSource;
 import com.kerboocorp.depensometre.model.entities.Movement;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 /**
  * Created by cgo on 9/04/2015.
@@ -14,6 +15,7 @@ public class SaveMovementController implements SaveMovement {
     private final MovementDataSource movementDataSource;
     private final Bus uiBus;
 
+    private String accessToken;
     private Movement movement;
 
     public SaveMovementController(MovementDataSource movementDataSource, Bus uiBus) {
@@ -34,6 +36,7 @@ public class SaveMovementController implements SaveMovement {
         saveMovement();
     }
 
+    @Subscribe
     @Override
     public void onMovementReceived(Movement response) {
         sendMovementToPresenter(response);
@@ -45,8 +48,13 @@ public class SaveMovementController implements SaveMovement {
     }
 
     @Override
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    @Override
     public void saveMovement() {
-        movementDataSource.saveMovement(movement);
+        movementDataSource.saveMovement(accessToken, movement);
     }
 
 

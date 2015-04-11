@@ -15,4 +15,6 @@ public interface Login extends UseCase {
     public void sendAccessTokenToPresenter(AccessToken response);
 
     public void unRegister();
+
+    public void setEmailAndPassword(String email, String password);
 }

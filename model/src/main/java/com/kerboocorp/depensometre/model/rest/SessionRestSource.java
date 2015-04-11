@@ -40,7 +40,8 @@ public class SessionRestSource implements SessionDataSource {
 
     @Override
     public void login(String email, String password) {
-        sessionApi.login(email, password, new Callback<AccessToken>() {
+        //sessionApi.login(email, password, new Callback<AccessToken>() {
+        sessionApi.login(new SessionRequest(email, password), new Callback<AccessToken>() {
             @Override
             public void success(AccessToken accessToken, Response response) {
                 BusProvider.getRestBusInstance().post(accessToken);

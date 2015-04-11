@@ -19,6 +19,7 @@ public class FindMovementListController implements FindMovementList {
     private final MovementDataSource movementDataSource;
     private final Bus uiBus;
 
+    private String accessToken;
     private String month;
     private String year;
 
@@ -53,8 +54,13 @@ public class FindMovementListController implements FindMovementList {
     }
 
     @Override
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    @Override
     public void requestMovementList() {
-        movementDataSource.findMovementList(year, month);
+        movementDataSource.findMovementList(accessToken, year, month);
     }
 
     @Override
