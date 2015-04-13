@@ -10,4 +10,6 @@ public interface MovementDataSource {
     public void findMovementList(String accessToken, String year, String month);
 
     public void saveMovement(String accessToken, Movement movement);
+
+    public void deleteMovement(String accessToken, Movement movement);
 }

@@ -2,6 +2,7 @@ package com.kerboocorp.depensometre.model.entities;
 
 import java.io.Serializable;
 
+
 /**
  * Created by cgo on 7/04/2015.
  */
@@ -159,5 +160,22 @@ public class Movement extends BaseEntity implements Serializable {
     public void setUserId(Integer userId) {
         this.userId = userId;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Movement movement = (Movement) o;
+
+        return !(super.getId() != null ? !super.getId().equals(movement.getId()) : movement.getId() != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return super.getId() != null ? super.getId().hashCode() : 0;
+    }
+
 
 }

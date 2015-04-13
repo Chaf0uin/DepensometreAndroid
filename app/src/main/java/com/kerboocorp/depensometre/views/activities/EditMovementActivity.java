@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -14,11 +15,15 @@ import android.widget.EditText;
 
 import com.android.datetimepicker.date.DatePickerDialog;
 import com.kerboocorp.depensometre.R;
+import com.kerboocorp.depensometre.model.entities.Movement;
 import com.kerboocorp.depensometre.mvp.presenters.EditMovementPresenter;
 import com.kerboocorp.depensometre.mvp.presenters.LoginPresenter;
 import com.kerboocorp.depensometre.mvp.views.EditMovementView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -71,7 +76,16 @@ public class EditMovementActivity extends ActionBarActivity implements EditMovem
         }
 
         Intent intent = getIntent();
-        editMovementPresenter.setMovementType(intent.getBooleanExtra("isOutput", false));
+
+
+        Movement currentMovement = (Movement)intent.getSerializableExtra("movement");
+        if (currentMovement != null) {
+            editMovementPresenter.setCurrentMovement(currentMovement);
+            editMovementPresenter.setMovementType(intent.getBooleanExtra("isOutput", false), false);
+        } else {
+            editMovementPresenter.setMovementType(intent.getBooleanExtra("isOutput", false), true);
+
+        }
     }
 
     @Override
@@ -93,8 +107,20 @@ public class EditMovementActivity extends ActionBarActivity implements EditMovem
 
         }
 
-
         return true;
+    }
+
+    @Override
+    protected void onStop() {
+
+        super.onStop();
+        editMovementPresenter.stop();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        editMovementPresenter.start();
     }
 
     @Override
@@ -117,6 +143,18 @@ public class EditMovementActivity extends ActionBarActivity implements EditMovem
     }
 
     @Override
+    public void finish(Movement movement, String action) {
+        if (movement != null) {
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("action", action);
+            returnIntent.putExtra("movement", movement);
+            setResult(RESULT_OK, returnIntent);
+        }
+
+        finish();
+    }
+
+    @Override
     public void setDate(String date) {
         dateEditText.setText(date);
     }
@@ -134,6 +172,23 @@ public class EditMovementActivity extends ActionBarActivity implements EditMovem
     public void hideDialog() {
         progressDialog.dismiss();
     }
+
+    @Override
+    public void fillForm(Movement movement) {
+        nameEditText.setText(movement.getName());
+        categoryEditText.setText(movement.getCategory());
+        amountEditText.setText(movement.getAmount());
+
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat fullDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        try {
+            dateEditText.setText(simpleDateFormat.format(fullDateFormat.parse(movement.getDate())));
+        } catch (ParseException e) {
+            dateEditText.setText(simpleDateFormat.format(new Date()));
+        }
+    }
+
 
     @Override
     public Context getContext() {

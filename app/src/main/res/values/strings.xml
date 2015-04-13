@@ -13,5 +13,13 @@
     <string name="action_save">Enregistrer</string>
     <string name="dialog_saving">Enregistrement...</string>
 
+    <string name="dialog_delete_title">Supprimer ?</string>
+    <string name="dialog_delete_content">Voulez-vous supprimer ce mouvement ?</string>
+    <string name="dialog_delete_agree">Oui</string>
+    <string name="dialog_delete_disagree">Non</string>
+    <string name="dialog_deleting">Suppression...</string>
+
+    <string name="action_logout">Déconnexion</string>
+
 
 </resources>

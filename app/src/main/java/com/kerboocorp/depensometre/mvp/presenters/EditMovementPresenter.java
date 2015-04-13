@@ -9,6 +9,8 @@ import com.kerboocorp.depensometre.common.utils.BusProvider;
 import com.kerboocorp.depensometre.domain.movement.impl.SaveMovementController;
 import com.kerboocorp.depensometre.domain.session.impl.LoginController;
 import com.kerboocorp.depensometre.model.entities.Movement;
+import com.kerboocorp.depensometre.model.entities.ResponseObject;
+import com.kerboocorp.depensometre.model.entities.ResponseType;
 import com.kerboocorp.depensometre.model.rest.MovementRestSource;
 import com.kerboocorp.depensometre.model.rest.SessionRestSource;
 import com.kerboocorp.depensometre.mvp.views.EditMovementView;
@@ -34,6 +36,8 @@ public class EditMovementPresenter extends Presenter implements DatePickerDialog
     private SimpleDateFormat dateFormat;
     private Calendar calendar;
 
+    private Movement currentMovement;
+
     public EditMovementPresenter(EditMovementView editMovementView) {
         this.editMovementView = editMovementView;
         saveMovementController = new SaveMovementController(MovementRestSource.getInstance(), BusProvider.getUIBusInstance());
@@ -41,18 +45,19 @@ public class EditMovementPresenter extends Presenter implements DatePickerDialog
         calendar = Calendar.getInstance();
         dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         editMovementView.setDate(dateFormat.format(calendar.getTime()));
+
+        currentMovement = new Movement();
     }
 
     public void saveMovement(String name, String category, String amount) {
         editMovementView.showDialog();
 
-        Movement movement = new Movement();
-        movement.setName(name);
-        movement.setCategory(category);
-        movement.setAmount(amount);
-        movement.setMovementType(movementType);
-        movement.setDate(dateFormat.format(calendar.getTime()));
-        saveMovementController.setMovement(movement);
+        currentMovement.setName(name);
+        currentMovement.setCategory(category);
+        currentMovement.setAmount(amount);
+        currentMovement.setMovementType(movementType);
+        currentMovement.setDate(dateFormat.format(calendar.getTime()));
+        saveMovementController.setMovement(currentMovement);
 
         SharedPreferences sharedPref = editMovementView.getContext().getSharedPreferences(editMovementView.getContext().getString(R.string.app_full_name), Context.MODE_PRIVATE);
         String accessToken = sharedPref.getString(editMovementView.getContext().getString(R.string.access_token), "");
@@ -77,13 +82,22 @@ public class EditMovementPresenter extends Presenter implements DatePickerDialog
         }
     }
 
-    public void setMovementType(boolean movementType) {
+    public void setMovementType(boolean movementType, boolean isNew) {
         this.movementType = movementType;
-        if (movementType) {
-            editMovementView.setTitle("Ajouter dépense");
+        if (isNew) {
+            if (movementType) {
+                editMovementView.setTitle("Ajouter dépense");
+            } else {
+                editMovementView.setTitle("Ajouter rentrée");
+            }
         } else {
-            editMovementView.setTitle("Ajouter rentrée");
+            if (movementType) {
+                editMovementView.setTitle("Editer dépense");
+            } else {
+                editMovementView.setTitle("Editer rentrée");
+            }
         }
+
     }
 
     @Override
@@ -97,8 +111,19 @@ public class EditMovementPresenter extends Presenter implements DatePickerDialog
     }
 
     @Subscribe
-    public void onMovementReceived(Movement response) {
-        editMovementView.hideDialog();
-        editMovementView.finish();
+    public void onMovementReceived(ResponseObject<Movement> response) {
+        if (ResponseType.insert.equals(response.getType())) {
+            editMovementView.hideDialog();
+            editMovementView.finish(response.getContent(), "add");
+        } else if (ResponseType.update.equals(response.getType())) {
+            editMovementView.hideDialog();
+            editMovementView.finish(response.getContent(), "update");
+        }
+
+    }
+
+    public void setCurrentMovement(Movement currentMovement) {
+        this.currentMovement = currentMovement;
+        editMovementView.fillForm(currentMovement);
     }
 }

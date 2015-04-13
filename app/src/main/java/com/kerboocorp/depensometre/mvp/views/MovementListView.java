@@ -24,6 +24,12 @@ public interface MovementListView extends View {
 
     void appendMovementList (MovementList movementList);
 
+    void appendMovement (Movement movement);
+
+    void deleteMovement(Movement movement);
+
+    void updateMovement(Movement movement);
+
     void selectMonth();
 
     void setTitle(String title);
@@ -32,5 +38,17 @@ public interface MovementListView extends View {
 
     void setSelectedMonthSpinner(int month, int year);
 
-    void startEditMovementActivity(boolean isOutput);
+    void startEditMovementActivity(boolean isOutput, Movement movement);
+
+    void setEmail(String email);
+
+    void logout();
+
+    void startLoginActivity();
+
+    void showDialog();
+
+    void hideDialog();
+
+    void showDeleteDialog(Movement movement);
 }

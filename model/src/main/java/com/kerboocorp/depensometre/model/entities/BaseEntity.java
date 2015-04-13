@@ -1,9 +1,11 @@
 package com.kerboocorp.depensometre.model.entities;
 
+import java.io.Serializable;
+
 /**
  * Created by cgo on 7/04/2015.
  */
-public class BaseEntity {
+public class BaseEntity implements Serializable {
 
     private Long id;
 

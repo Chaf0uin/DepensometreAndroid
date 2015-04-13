@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.kerboocorp.depensometre.R;
 import com.kerboocorp.depensometre.model.entities.Movement;
+import com.kerboocorp.depensometre.utils.MovementListListener;
 
 public class MovementAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 	private static final int TYPE_FOOTER = 0;
@@ -30,9 +31,15 @@ public class MovementAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private List<Movement> movementList;
     private Context context;
 
+    private MovementListListener movementListListener;
+
     public MovementAdapter(Context context) {
         this.movementList = new ArrayList<Movement>();
         this.context = context;
+    }
+
+    public void setMovementListListener(MovementListListener movementListListener) {
+        this.movementListListener = movementListListener;
     }
 
     public List<Movement> getMovementList() {
@@ -93,7 +100,7 @@ public class MovementAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     	
     	if (viewType == TYPE_ITEM) {
     		v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_card_movement, viewGroup, false);
-    		return new MovementViewHolder(v);
+    		return new MovementViewHolder(v, movementListListener);
         }
     	
     	throw new RuntimeException("there is no type that matches the type " + viewType + " + make sure your using types correctly");
@@ -153,9 +160,10 @@ public class MovementAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public Context context;
         public Movement movement;
         public MovementAdapter adapter;
-        //private DeleteMovementTask deleteMovementTask;
 
-        public MovementViewHolder(View itemView) {
+        private final MovementListListener movementListListener;
+
+        public MovementViewHolder(View itemView, MovementListListener movementListListener) {
             super(itemView);
             date = (TextView) itemView.findViewById(R.id.date);
             date.setOnClickListener(this);
@@ -165,10 +173,12 @@ public class MovementAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             amount.setOnClickListener(this);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
+            this.movementListListener = movementListListener;
         }
 
         @Override
         public void onClick(View v) {
+            movementListListener.onClick(movement);
 //            Intent intent = new Intent(context, MovementActivity.class);
 //            intent.putExtra("movement", (Parcelable) movement);
 //            intent.putExtra("action", "update");
@@ -178,6 +188,7 @@ public class MovementAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         @Override
         public boolean onLongClick(View v) {
+            movementListListener.onLongClick(movement);
             //adapter.removeMovement(movement);
             //deleteMovementTask = new DeleteMovementTask();
             //deleteMovementTask.setId(movement.getId());

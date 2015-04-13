@@ -23,6 +23,8 @@ public class LoginPresenter extends Presenter {
     private boolean isLoading = false;
     private boolean registered;
 
+    private String email;
+
     public LoginPresenter(LoginView loginView) {
         this.loginView = loginView;
         loginController = new LoginController(SessionRestSource.getInstance(), BusProvider.getUIBusInstance());
@@ -30,6 +32,7 @@ public class LoginPresenter extends Presenter {
 
     public void login(String email, String password) {
         loginController.setEmailAndPassword(email, password);
+        this.email = email;
         loginController.execute();
     }
 
@@ -39,6 +42,7 @@ public class LoginPresenter extends Presenter {
 
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(loginView.getContext().getString(R.string.access_token), response.getToken());
+        editor.putString(loginView.getContext().getString(R.string.email), email);
         editor.commit();
 
         loginView.startMovementListActivity();
@@ -50,6 +54,14 @@ public class LoginPresenter extends Presenter {
             BusProvider.getUIBusInstance().register(this);
             registered = true;
         }
+
+        SharedPreferences sharedPref = loginView.getContext().getSharedPreferences(loginView.getContext().getString(R.string.app_full_name), Context.MODE_PRIVATE);
+        String accessToken = sharedPref.getString(loginView.getContext().getString(R.string.access_token), "");
+
+        if (!accessToken.equals("")) {
+            loginView.startMovementListActivity();
+        }
+
 
     }
 

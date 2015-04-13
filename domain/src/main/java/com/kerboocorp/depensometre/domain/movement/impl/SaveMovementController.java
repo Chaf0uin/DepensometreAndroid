@@ -4,6 +4,8 @@ import com.kerboocorp.depensometre.common.utils.BusProvider;
 import com.kerboocorp.depensometre.domain.movement.SaveMovement;
 import com.kerboocorp.depensometre.model.MovementDataSource;
 import com.kerboocorp.depensometre.model.entities.Movement;
+import com.kerboocorp.depensometre.model.entities.ResponseObject;
+import com.kerboocorp.depensometre.model.entities.ResponseType;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -38,8 +40,10 @@ public class SaveMovementController implements SaveMovement {
 
     @Subscribe
     @Override
-    public void onMovementReceived(Movement response) {
-        sendMovementToPresenter(response);
+    public void onMovementReceived(ResponseObject<Movement> response) {
+        if (ResponseType.insert.equals(response.getType()) || ResponseType.update.equals(response.getType())) {
+            sendMovementToPresenter(response);
+        }
     }
 
     @Override
@@ -59,7 +63,7 @@ public class SaveMovementController implements SaveMovement {
 
 
     @Override
-    public void sendMovementToPresenter(Movement response) {
+    public void sendMovementToPresenter(ResponseObject<Movement> response) {
         uiBus.post(response);
     }
 
