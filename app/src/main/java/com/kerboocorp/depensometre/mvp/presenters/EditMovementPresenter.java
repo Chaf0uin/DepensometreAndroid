@@ -84,6 +84,7 @@ public class EditMovementPresenter extends Presenter implements DatePickerDialog
 
     public void setMovementType(boolean movementType, boolean isNew) {
         this.movementType = movementType;
+        currentMovement.setMovementType(movementType);
         if (isNew) {
             if (movementType) {
                 editMovementView.setTitle("Ajouter dépense");
@@ -125,5 +126,9 @@ public class EditMovementPresenter extends Presenter implements DatePickerDialog
     public void setCurrentMovement(Movement currentMovement) {
         this.currentMovement = currentMovement;
         editMovementView.fillForm(currentMovement);
+    }
+
+    public Movement getCurrentMovement() {
+        return currentMovement;
     }
 }

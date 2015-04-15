@@ -3,6 +3,7 @@ package com.kerboocorp.depensometre.views.activities;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -135,16 +136,17 @@ public class MovementListActivity extends ActionBarActivity implements MovementL
         if (savedInstanceState == null) {
 
             movementListPresenter = new MovementListPresenter(this);
-            movementAdapter.setMovementListListener(movementListPresenter);
 
         } else {
 
-//        MoviesWrapper moviesWrapper = (MoviesWrapper) savedInstanceState
-//                .getSerializable("movies_wrapper");
-//
-//        mMoviesPresenter = new MoviesPresenter(this, moviesWrapper);
-//    }
+            MovementList movementList = (MovementList) savedInstanceState.getSerializable("movements");
+            movementListPresenter = new MovementListPresenter(this, movementList);
+            getSupportActionBar().setTitle(savedInstanceState.getString("toolbar"));
+            emailTextView.setText(savedInstanceState.getString("email"));
+
         }
+
+        movementAdapter.setMovementListListener(movementListPresenter);
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -166,6 +168,24 @@ public class MovementListActivity extends ActionBarActivity implements MovementL
                 logout();
             }
         });
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle bundle) {
+
+        super.onSaveInstanceState(bundle);
+
+        if (movementAdapter != null) {
+
+            bundle.putSerializable("movements", new MovementList(movementAdapter.getMovementList()));
+            bundle.putString("toolbar", getSupportActionBar().getTitle().toString());
+
+            SharedPreferences sharedPref = getSharedPreferences(getString(R.string.app_full_name), Context.MODE_PRIVATE);
+            bundle.putString("email", sharedPref.getString(getString(R.string.email), ""));
+
+        }
+
     }
 
     @Override

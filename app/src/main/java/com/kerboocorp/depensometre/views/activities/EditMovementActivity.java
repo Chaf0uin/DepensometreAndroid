@@ -3,6 +3,7 @@ package com.kerboocorp.depensometre.views.activities;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.app.ActionBarActivity;
@@ -71,21 +72,43 @@ public class EditMovementActivity extends ActionBarActivity implements EditMovem
 
         if (savedInstanceState == null) {
             editMovementPresenter = new EditMovementPresenter(this);
+
+            Intent intent = getIntent();
+
+            Movement currentMovement = (Movement)intent.getSerializableExtra("movement");
+            if (currentMovement != null) {
+                editMovementPresenter.setCurrentMovement(currentMovement);
+                editMovementPresenter.setMovementType(intent.getBooleanExtra("isOutput", false), false);
+            } else {
+                editMovementPresenter.setMovementType(intent.getBooleanExtra("isOutput", false), true);
+
+            }
         } else {
+            editMovementPresenter = new EditMovementPresenter(this);
 
-        }
-
-        Intent intent = getIntent();
-
-
-        Movement currentMovement = (Movement)intent.getSerializableExtra("movement");
-        if (currentMovement != null) {
+            Movement currentMovement = (Movement) savedInstanceState.getSerializable("movement");
+            editMovementPresenter.setMovementType(currentMovement.getMovementType(), (currentMovement.getId() == null));
             editMovementPresenter.setCurrentMovement(currentMovement);
-            editMovementPresenter.setMovementType(intent.getBooleanExtra("isOutput", false), false);
-        } else {
-            editMovementPresenter.setMovementType(intent.getBooleanExtra("isOutput", false), true);
-
         }
+
+
+
+
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle bundle) {
+
+        super.onSaveInstanceState(bundle);
+
+        Movement currentMovement = editMovementPresenter.getCurrentMovement();
+        currentMovement.setName(nameEditText.getText().toString());
+        currentMovement.setCategory(categoryEditText.getText().toString());
+        currentMovement.setAmount(amountEditText.getText().toString());
+        currentMovement.setDate(dateEditText.getText().toString());
+        bundle.putSerializable("movement", currentMovement);
+
     }
 
     @Override

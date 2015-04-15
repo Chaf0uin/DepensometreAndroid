@@ -48,6 +48,14 @@ public class MovementListPresenter extends Presenter implements MovementListList
         deleteMovementController = new DeleteMovementController(MovementRestSource.getInstance(), BusProvider.getUIBusInstance());
     }
 
+    public MovementListPresenter(MovementListView movementListView, MovementList movementList) {
+        this.movementListView = movementListView;
+        findMovementListController = new FindMovementListController(MovementRestSource.getInstance(), BusProvider.getUIBusInstance());
+        deleteMovementController = new DeleteMovementController(MovementRestSource.getInstance(), BusProvider.getUIBusInstance());
+
+        onMovementListReceived(movementList);
+    }
+
     @Subscribe
     public void onMovementListReceived(MovementList movementList) {
 
