@@ -1,5 +1,8 @@
 package com.kerboocorp.depensometre.mvp.views;
 
+import android.widget.ArrayAdapter;
+
+import com.kerboocorp.depensometre.model.entities.CategoryList;
 import com.kerboocorp.depensometre.model.entities.Movement;
 
 /**
@@ -22,5 +25,9 @@ public interface EditMovementView extends View {
     void hideDialog();
 
     void fillForm(Movement movement);
+
+    void setCategoryies(ArrayAdapter<String> adapter);
+
+    void setNames(ArrayAdapter<String> adapter);
 
 }

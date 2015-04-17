@@ -11,11 +11,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
 import com.android.datetimepicker.date.DatePickerDialog;
 import com.kerboocorp.depensometre.R;
+import com.kerboocorp.depensometre.model.entities.Category;
+import com.kerboocorp.depensometre.model.entities.CategoryList;
 import com.kerboocorp.depensometre.model.entities.Movement;
 import com.kerboocorp.depensometre.mvp.presenters.EditMovementPresenter;
 import com.kerboocorp.depensometre.mvp.presenters.LoginPresenter;
@@ -210,6 +213,17 @@ public class EditMovementActivity extends ActionBarActivity implements EditMovem
         } catch (ParseException e) {
             dateEditText.setText(simpleDateFormat.format(new Date()));
         }
+    }
+
+    @Override
+    public void setCategoryies(ArrayAdapter<String> adapter) {
+        categoryEditText.setAdapter(adapter);
+    }
+
+
+    @Override
+    public void setNames(ArrayAdapter<String> adapter) {
+        nameEditText.setAdapter(adapter);
     }
 
 

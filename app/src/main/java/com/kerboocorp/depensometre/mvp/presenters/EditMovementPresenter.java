@@ -2,23 +2,34 @@ package com.kerboocorp.depensometre.mvp.presenters;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.widget.ArrayAdapter;
 
 import com.android.datetimepicker.date.DatePickerDialog;
 import com.kerboocorp.depensometre.R;
 import com.kerboocorp.depensometre.common.utils.BusProvider;
+import com.kerboocorp.depensometre.domain.category.impl.FindCategoryListController;
 import com.kerboocorp.depensometre.domain.movement.impl.SaveMovementController;
+import com.kerboocorp.depensometre.domain.name.impl.FindNameListController;
 import com.kerboocorp.depensometre.domain.session.impl.LoginController;
+import com.kerboocorp.depensometre.model.entities.Category;
+import com.kerboocorp.depensometre.model.entities.CategoryList;
 import com.kerboocorp.depensometre.model.entities.Movement;
+import com.kerboocorp.depensometre.model.entities.Name;
+import com.kerboocorp.depensometre.model.entities.NameList;
 import com.kerboocorp.depensometre.model.entities.ResponseObject;
 import com.kerboocorp.depensometre.model.entities.ResponseType;
+import com.kerboocorp.depensometre.model.rest.CategoryRestSource;
 import com.kerboocorp.depensometre.model.rest.MovementRestSource;
+import com.kerboocorp.depensometre.model.rest.NameRestSource;
 import com.kerboocorp.depensometre.model.rest.SessionRestSource;
 import com.kerboocorp.depensometre.mvp.views.EditMovementView;
 import com.kerboocorp.depensometre.mvp.views.LoginView;
 import com.squareup.otto.Subscribe;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by cgo on 9/04/2015.
@@ -27,6 +38,8 @@ public class EditMovementPresenter extends Presenter implements DatePickerDialog
 
     private final EditMovementView editMovementView;
     private SaveMovementController saveMovementController;
+    private FindCategoryListController findCategoryListController;
+    private FindNameListController findNameListController;
 
     private boolean isLoading = false;
     private boolean registered;
@@ -41,6 +54,8 @@ public class EditMovementPresenter extends Presenter implements DatePickerDialog
     public EditMovementPresenter(EditMovementView editMovementView) {
         this.editMovementView = editMovementView;
         saveMovementController = new SaveMovementController(MovementRestSource.getInstance(), BusProvider.getUIBusInstance());
+        findCategoryListController = new FindCategoryListController(CategoryRestSource.getInstance(), BusProvider.getUIBusInstance());
+        findNameListController = new FindNameListController(NameRestSource.getInstance(), BusProvider.getUIBusInstance());
 
         calendar = Calendar.getInstance();
         dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -72,6 +87,15 @@ public class EditMovementPresenter extends Presenter implements DatePickerDialog
             BusProvider.getUIBusInstance().register(this);
             registered = true;
         }
+
+        SharedPreferences sharedPref = editMovementView.getContext().getSharedPreferences(editMovementView.getContext().getString(R.string.app_full_name), Context.MODE_PRIVATE);
+        String accessToken = sharedPref.getString(editMovementView.getContext().getString(R.string.access_token), "");
+
+        findCategoryListController.setAccessToken(accessToken);
+        findCategoryListController.execute();
+
+        findNameListController.setAccessToken(accessToken);
+        findNameListController.execute();
     }
 
     @Override
@@ -130,5 +154,45 @@ public class EditMovementPresenter extends Presenter implements DatePickerDialog
 
     public Movement getCurrentMovement() {
         return currentMovement;
+    }
+
+    @Subscribe
+    public void onCategoryListReceived(CategoryList categoryList) {
+
+        List<String> categories = new ArrayList<String>();
+
+        for (Category category : categoryList.getCategoryList()) {
+            if (category.getCategory() != null) {
+                categories.add(category.getCategory());
+            }
+        }
+
+        String[] categoryArray = categories.toArray(new String[categories.size()]);
+
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(editMovementView.getContext(),
+                android.R.layout.simple_dropdown_item_1line, categoryArray);
+
+        editMovementView.setCategoryies(adapter);
+
+    }
+
+    @Subscribe
+    public void onNameListReceived(NameList nameList) {
+
+        List<String> names = new ArrayList<String>();
+
+        for (Name name : nameList.getNameList()) {
+            if (name.getName() != null) {
+                names.add(name.getName());
+            }
+        }
+
+        String[] nameArray = names.toArray(new String[names.size()]);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(editMovementView.getContext(),
+                android.R.layout.simple_dropdown_item_1line, nameArray);
+
+        editMovementView.setNames(adapter);
     }
 }
