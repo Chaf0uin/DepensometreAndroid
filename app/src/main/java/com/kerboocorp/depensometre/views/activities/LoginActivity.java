@@ -52,15 +52,8 @@ public class LoginActivity extends ActionBarActivity implements LoginView {
             }
         });
 
-        if (savedInstanceState == null) {
-            loginPresenter = new LoginPresenter(this);
-        } else {
-//        MoviesWrapper moviesWrapper = (MoviesWrapper) savedInstanceState
-//                .getSerializable("movies_wrapper");
-//
-//        mMoviesPresenter = new MoviesPresenter(this, moviesWrapper);
-//    }
-        }
+        loginPresenter = new LoginPresenter(this);
+
     }
 
     @Override

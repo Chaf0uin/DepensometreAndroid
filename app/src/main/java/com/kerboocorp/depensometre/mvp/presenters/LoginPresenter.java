@@ -23,7 +23,7 @@ public class LoginPresenter extends Presenter {
     private LoginController loginController;
 
     private boolean isLoading = false;
-    private boolean registered;
+    private boolean isRegistered;
 
     private String email;
 
@@ -62,9 +62,11 @@ public class LoginPresenter extends Presenter {
 
     @Override
     public void start() {
-        if (!registered) {
+        if (!isRegistered) {
             BusProvider.getUIBusInstance().register(this);
-            registered = true;
+            isRegistered = true;
+
+            loginController.register();
         }
 
         SharedPreferences sharedPref = loginView.getContext().getSharedPreferences(loginView.getContext().getString(R.string.app_full_name), Context.MODE_PRIVATE);
@@ -79,9 +81,11 @@ public class LoginPresenter extends Presenter {
 
     @Override
     public void stop() {
-        if (registered) {
+        if (isRegistered) {
             BusProvider.getUIBusInstance().unregister(this);
-            registered = false;
+            isRegistered = false;
         }
+
+        loginController.unRegister();
     }
 }

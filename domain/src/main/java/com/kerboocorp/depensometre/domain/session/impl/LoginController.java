@@ -20,6 +20,8 @@ public class LoginController implements Login {
     private String email;
     private String password;
 
+    private boolean isRegistered;
+
     public LoginController(SessionDataSource sessionDataSource, Bus uiBus) {
         if (sessionDataSource == null)
             throw new IllegalArgumentException("SessionDataSource cannot be null");
@@ -30,7 +32,6 @@ public class LoginController implements Login {
         this.sessionDataSource = sessionDataSource;
         this.uiBus = uiBus;
 
-        BusProvider.getRestBusInstance().register(this);
     }
 
     @Override
@@ -67,7 +68,20 @@ public class LoginController implements Login {
 
     @Override
     public void unRegister() {
-        BusProvider.getRestBusInstance().unregister(this);
+        if (isRegistered) {
+            BusProvider.getRestBusInstance().unregister(this);
+            isRegistered = false;
+        }
+
+    }
+
+    @Override
+    public void register() {
+        if (!isRegistered) {
+            BusProvider.getRestBusInstance().register(this);
+            isRegistered = true;
+        }
+
     }
 
     @Override

@@ -21,5 +21,7 @@ public interface Login extends UseCase {
 
     public void unRegister();
 
+    public void register();
+
     public void setEmailAndPassword(String email, String password);
 }
