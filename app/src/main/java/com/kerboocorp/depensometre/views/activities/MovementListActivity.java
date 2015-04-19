@@ -77,7 +77,7 @@ public class MovementListActivity extends ActionBarActivity implements MovementL
     private MovementAdapter movementAdapter;
     private LinearLayoutManager linearLayoutManager;
 
-    private ProgressDialog progressDialog;
+    private MaterialDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -261,16 +261,19 @@ public class MovementListActivity extends ActionBarActivity implements MovementL
     @Override
     public void appendMovement(Movement movement) {
         movementAdapter.addMovement(movement);
+        movementListPresenter.updateTitle(movementAdapter.getMovementList());
     }
 
     @Override
     public void deleteMovement(Movement movement) {
         movementAdapter.removeMovement(movement);
+        movementListPresenter.updateTitle(movementAdapter.getMovementList());
     }
 
     @Override
     public void updateMovement(Movement movement) {
         movementAdapter.updateMovement(movement);
+        movementListPresenter.updateTitle(movementAdapter.getMovementList());
     }
 
     @Override
@@ -327,11 +330,11 @@ public class MovementListActivity extends ActionBarActivity implements MovementL
 
     @Override
     public void showDialog() {
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage(getString(R.string.dialog_deleting));
-        progressDialog.setIndeterminate(false);
-        progressDialog.setCancelable(true);
-        progressDialog.show();
+        progressDialog = new MaterialDialog.Builder(this)
+                .title(getString(R.string.dialog_deleting))
+                .content(getString(R.string.dialog_wait))
+                .progress(true, 0)
+                .show();
     }
 
     @Override

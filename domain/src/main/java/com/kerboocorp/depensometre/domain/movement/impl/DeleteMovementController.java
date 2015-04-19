@@ -64,8 +64,8 @@ public class DeleteMovementController implements DeleteMovement {
 
     @Override
     public void register() {
-        if (isRegistered) {
-            BusProvider.getRestBusInstance().unregister(this);
+        if (!isRegistered) {
+            BusProvider.getRestBusInstance().register(this);
             isRegistered = true;
         }
     }

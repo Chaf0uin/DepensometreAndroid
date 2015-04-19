@@ -38,7 +38,7 @@ public class MovementListPresenter extends Presenter implements MovementListList
     private DeleteMovementController deleteMovementController;
 
     private boolean isLoading = false;
-    private boolean registered;
+    private boolean isRegistered;
 
     private String selectedMonth;
     private String selectedYear;
@@ -99,16 +99,15 @@ public class MovementListPresenter extends Presenter implements MovementListList
 
     @Override
     public void start() {
-        if (!registered) {
+        if (!isRegistered) {
             BusProvider.getUIBusInstance().register(this);
+            isRegistered = true;
         }
 
         findMovementListController.register();
         deleteMovementController.register();
 
         if (movementListView.isMovementListEmpty()) {
-
-            registered = true;
 
             movementListView.showLoading();
 
@@ -146,9 +145,9 @@ public class MovementListPresenter extends Presenter implements MovementListList
 
     @Override
     public void stop() {
-        if (registered) {
+        if (isRegistered) {
             BusProvider.getUIBusInstance().unregister(this);
-            registered = false;
+            isRegistered = false;
         }
 
         findMovementListController.unRegister();
@@ -288,5 +287,30 @@ public class MovementListPresenter extends Presenter implements MovementListList
 
     public void setSelectedMonth(String selectedMonth) {
         this.selectedMonth = selectedMonth;
+    }
+
+    public void updateTitle(List<Movement> movementList) {
+
+        double total = 0;
+
+        for (Movement movement : movementList) {
+            if (movement.getMovementType()) {
+                total -= Double.parseDouble(movement.getAmount());
+            } else {
+                total += Double.parseDouble(movement.getAmount());
+            }
+        }
+
+        String formattedTotal;
+
+        if (total > 0) {
+            formattedTotal = "+" + String.format("%.2f", total);
+        } else if (total < 0) {
+            formattedTotal = String.format("%.2f", total);
+        } else {
+            formattedTotal = "0";
+        }
+
+        movementListView.setTitle(titleDate + " | " + formattedTotal + " €");
     }
 }
