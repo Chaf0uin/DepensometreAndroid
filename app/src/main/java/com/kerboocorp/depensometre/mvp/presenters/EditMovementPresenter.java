@@ -16,6 +16,7 @@ import com.kerboocorp.depensometre.model.entities.CategoryList;
 import com.kerboocorp.depensometre.model.entities.Movement;
 import com.kerboocorp.depensometre.model.entities.Name;
 import com.kerboocorp.depensometre.model.entities.NameList;
+import com.kerboocorp.depensometre.model.entities.ResponseError;
 import com.kerboocorp.depensometre.model.entities.ResponseObject;
 import com.kerboocorp.depensometre.model.entities.ResponseType;
 import com.kerboocorp.depensometre.model.rest.CategoryRestSource;
@@ -194,5 +195,15 @@ public class EditMovementPresenter extends Presenter implements DatePickerDialog
                 android.R.layout.simple_dropdown_item_1line, nameArray);
 
         editMovementView.setNames(adapter);
+    }
+
+    @Subscribe
+    public void onErrorReceived(ResponseError error) {
+        editMovementView.hideDialog();
+        if (ResponseType.insert.equals(error.getType())) {
+            editMovementView.showError(editMovementView.getContext().getString(R.string.error_insert_movement));
+        } else if (ResponseType.update.equals(error.getType())) {
+            editMovementView.showError(editMovementView.getContext().getString(R.string.error_update_movement));
+        }
     }
 }

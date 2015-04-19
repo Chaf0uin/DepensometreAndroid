@@ -24,6 +24,8 @@ public interface EditMovementView extends View {
 
     void hideDialog();
 
+    void showError (String error);
+
     void fillForm(Movement movement);
 
     void setCategoryies(ArrayAdapter<String> adapter);

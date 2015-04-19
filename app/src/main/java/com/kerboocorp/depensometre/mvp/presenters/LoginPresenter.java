@@ -8,6 +8,8 @@ import com.kerboocorp.depensometre.R;
 import com.kerboocorp.depensometre.common.utils.BusProvider;
 import com.kerboocorp.depensometre.domain.session.impl.LoginController;
 import com.kerboocorp.depensometre.model.entities.AccessToken;
+import com.kerboocorp.depensometre.model.entities.ResponseError;
+import com.kerboocorp.depensometre.model.entities.ResponseType;
 import com.kerboocorp.depensometre.model.rest.SessionRestSource;
 import com.kerboocorp.depensometre.mvp.views.LoginView;
 import com.squareup.otto.Subscribe;
@@ -31,6 +33,7 @@ public class LoginPresenter extends Presenter {
     }
 
     public void login(String email, String password) {
+        loginView.showLoading();
         loginController.setEmailAndPassword(email, password);
         this.email = email;
         loginController.execute();
@@ -38,6 +41,7 @@ public class LoginPresenter extends Presenter {
 
     @Subscribe
     public void onAccessTokenReceived(AccessToken response) {
+        loginView.hideLoading();
         SharedPreferences sharedPref = loginView.getContext().getSharedPreferences(loginView.getContext().getString(R.string.app_full_name), Context.MODE_PRIVATE);
 
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -46,6 +50,14 @@ public class LoginPresenter extends Presenter {
         editor.commit();
 
         loginView.startMovementListActivity();
+    }
+
+    @Subscribe
+    public void onErrorReceived(ResponseError error) {
+        loginView.hideLoading();
+        if (ResponseType.find.equals(error.getType())) {
+            loginView.showError(loginView.getContext().getString(R.string.error_login));
+        }
     }
 
     @Override

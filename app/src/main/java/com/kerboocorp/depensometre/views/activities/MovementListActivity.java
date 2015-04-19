@@ -143,6 +143,8 @@ public class MovementListActivity extends ActionBarActivity implements MovementL
             movementListPresenter = new MovementListPresenter(this, movementList);
             getSupportActionBar().setTitle(savedInstanceState.getString("toolbar"));
             emailTextView.setText(savedInstanceState.getString("email"));
+            movementListPresenter.setSelectedMonth(savedInstanceState.getString("selectedMonth"));
+            movementListPresenter.setSelectedYear(savedInstanceState.getString("selectedYear"));
 
         }
 
@@ -151,6 +153,7 @@ public class MovementListActivity extends ActionBarActivity implements MovementL
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                swipeRefreshLayout.setRefreshing(true);
                 movementListPresenter.refreshMovementList();
             }
         });
@@ -183,6 +186,9 @@ public class MovementListActivity extends ActionBarActivity implements MovementL
 
             SharedPreferences sharedPref = getSharedPreferences(getString(R.string.app_full_name), Context.MODE_PRIVATE);
             bundle.putString("email", sharedPref.getString(getString(R.string.email), ""));
+
+            bundle.putString("selectedMonth", movementListPresenter.getSelectedMonth());
+            bundle.putString("selectedYear", movementListPresenter.getSelectedYear());
 
         }
 
@@ -220,11 +226,25 @@ public class MovementListActivity extends ActionBarActivity implements MovementL
     @Override
     public void showError(String error) {
 
+        new MaterialDialog.Builder(this)
+                .title(getString(R.string.error_oops))
+                .content(error)
+                .positiveText(R.string.dialog_close)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        dialog.dismiss();
+                        hideError();
+                    }
+
+                })
+                .show();
     }
 
     @Override
     public void hideError() {
-
+        hideLoading();
+        movementListPresenter.hideError();
     }
 
     @Override

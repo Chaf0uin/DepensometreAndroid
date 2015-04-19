@@ -5,6 +5,7 @@ import com.kerboocorp.depensometre.domain.movement.FindMovementList;
 import com.kerboocorp.depensometre.model.MovementDataSource;
 import com.kerboocorp.depensometre.model.entities.Movement;
 import com.kerboocorp.depensometre.model.entities.MovementList;
+import com.kerboocorp.depensometre.model.entities.ResponseError;
 import com.kerboocorp.depensometre.model.rest.MovementRestSource;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -18,6 +19,7 @@ public class FindMovementListController implements FindMovementList {
 
     private final MovementDataSource movementDataSource;
     private final Bus uiBus;
+    private boolean isRegistered;
 
     private String accessToken;
     private String month;
@@ -33,7 +35,6 @@ public class FindMovementListController implements FindMovementList {
         this.movementDataSource = movementDataSource;
         this.uiBus = uiBus;
 
-        BusProvider.getRestBusInstance().register(this);
     }
 
     @Override
@@ -69,7 +70,30 @@ public class FindMovementListController implements FindMovementList {
     }
 
     @Override
+    public void register() {
+        if (!isRegistered) {
+            BusProvider.getRestBusInstance().register(this);
+            isRegistered = true;
+        }
+    }
+
+    @Override
     public void unRegister() {
-        BusProvider.getRestBusInstance().unregister(this);
+        if (isRegistered) {
+            BusProvider.getRestBusInstance().unregister(this);
+            isRegistered = false;
+        }
+
+    }
+
+    @Subscribe
+    @Override
+    public void onErrorReceived(ResponseError error) {
+        sendErrorToPresenter(error);
+    }
+
+    @Override
+    public void sendErrorToPresenter(ResponseError error) {
+        uiBus.post(error);
     }
 }

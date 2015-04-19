@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.datetimepicker.date.DatePickerDialog;
 import com.kerboocorp.depensometre.R;
 import com.kerboocorp.depensometre.model.entities.Category;
@@ -51,7 +52,7 @@ public class EditMovementActivity extends ActionBarActivity implements EditMovem
     @InjectView(R.id.dateEditText)
     EditText dateEditText;
 
-    private ProgressDialog progressDialog;
+    private MaterialDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,10 +94,6 @@ public class EditMovementActivity extends ActionBarActivity implements EditMovem
             editMovementPresenter.setMovementType(currentMovement.getMovementType(), (currentMovement.getId() == null));
             editMovementPresenter.setCurrentMovement(currentMovement);
         }
-
-
-
-
 
     }
 
@@ -187,16 +184,32 @@ public class EditMovementActivity extends ActionBarActivity implements EditMovem
 
     @Override
     public void showDialog() {
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage(getString(R.string.dialog_saving));
-        progressDialog.setIndeterminate(false);
-        progressDialog.setCancelable(true);
-        progressDialog.show();
+        progressDialog = new MaterialDialog.Builder(this)
+                .title(getString(R.string.dialog_saving))
+                .content(getString(R.string.dialog_wait))
+                .progress(true, 0)
+                .show();
     }
 
     @Override
     public void hideDialog() {
         progressDialog.dismiss();
+    }
+
+    @Override
+    public void showError(String error) {
+        new MaterialDialog.Builder(this)
+                .title(getString(R.string.error_oops))
+                .content(error)
+                .positiveText(R.string.dialog_delete_agree)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        dialog.dismiss();
+                    }
+
+                })
+                .show();
     }
 
     @Override

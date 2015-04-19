@@ -1,7 +1,7 @@
 package com.kerboocorp.depensometre.domain.movement.impl;
 
 import com.kerboocorp.depensometre.common.utils.BusProvider;
-import com.kerboocorp.depensometre.domain.movement.SaveMovement;
+import com.kerboocorp.depensometre.domain.movement.DeleteMovement;
 import com.kerboocorp.depensometre.model.MovementDataSource;
 import com.kerboocorp.depensometre.model.entities.Movement;
 import com.kerboocorp.depensometre.model.entities.ResponseError;
@@ -11,17 +11,18 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 /**
- * Created by cgo on 9/04/2015.
+ * Created by chris on 12/04/15.
  */
-public class SaveMovementController implements SaveMovement {
+public class DeleteMovementController implements DeleteMovement {
 
     private final MovementDataSource movementDataSource;
     private final Bus uiBus;
+    private boolean isRegistered;
 
     private String accessToken;
     private Movement movement;
 
-    public SaveMovementController(MovementDataSource movementDataSource, Bus uiBus) {
+    public DeleteMovementController(MovementDataSource movementDataSource, Bus uiBus) {
         if (movementDataSource == null)
             throw new IllegalArgumentException("MovementDataSource cannot be null");
 
@@ -31,18 +32,12 @@ public class SaveMovementController implements SaveMovement {
         this.movementDataSource = movementDataSource;
         this.uiBus = uiBus;
 
-        BusProvider.getRestBusInstance().register(this);
-    }
-
-    @Override
-    public void execute() {
-        saveMovement();
     }
 
     @Subscribe
     @Override
-    public void onMovementReceived(ResponseObject<Movement> response) {
-        if (ResponseType.insert.equals(response.getType()) || ResponseType.update.equals(response.getType())) {
+    public void onMovementDeleted(ResponseObject<Movement> response) {
+        if (ResponseType.delete.equals(response.getType())) {
             sendMovementToPresenter(response);
         }
     }
@@ -58,10 +53,9 @@ public class SaveMovementController implements SaveMovement {
     }
 
     @Override
-    public void saveMovement() {
-        movementDataSource.saveMovement(accessToken, movement);
+    public void deleteMovement() {
+        movementDataSource.deleteMovement(accessToken, movement);
     }
-
 
     @Override
     public void sendMovementToPresenter(ResponseObject<Movement> response) {
@@ -69,11 +63,22 @@ public class SaveMovementController implements SaveMovement {
     }
 
     @Override
-    public void unRegister() {
-        BusProvider.getRestBusInstance().unregister(this);
+    public void register() {
+        if (isRegistered) {
+            BusProvider.getRestBusInstance().unregister(this);
+            isRegistered = true;
+        }
     }
 
-    @Subscribe
+    @Override
+    public void unRegister() {
+        if (isRegistered) {
+            BusProvider.getRestBusInstance().unregister(this);
+            isRegistered = false;
+        }
+
+    }
+
     @Override
     public void onErrorReceived(ResponseError error) {
         sendErrorToPresenter(error);
@@ -84,4 +89,8 @@ public class SaveMovementController implements SaveMovement {
         uiBus.post(error);
     }
 
+    @Override
+    public void execute() {
+        deleteMovement();
+    }
 }

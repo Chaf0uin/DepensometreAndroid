@@ -4,6 +4,7 @@ import com.kerboocorp.depensometre.common.utils.BusProvider;
 import com.kerboocorp.depensometre.domain.session.Login;
 import com.kerboocorp.depensometre.model.SessionDataSource;
 import com.kerboocorp.depensometre.model.entities.AccessToken;
+import com.kerboocorp.depensometre.model.entities.ResponseError;
 import com.kerboocorp.depensometre.model.rest.SessionRestSource;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -43,6 +44,12 @@ public class LoginController implements Login {
         sendAccessTokenToPresenter(response);
     }
 
+    @Subscribe
+    @Override
+    public void onErrorReceived(ResponseError error) {
+        sendErrorToPresenter(error);
+    }
+
     @Override
     public void requestAccessToken() {
         sessionDataSource.login(email, password);
@@ -51,6 +58,11 @@ public class LoginController implements Login {
     @Override
     public void sendAccessTokenToPresenter(AccessToken response) {
         uiBus.post(response);
+    }
+
+    @Override
+    public void sendErrorToPresenter(ResponseError error) {
+        uiBus.post(error);
     }
 
     @Override

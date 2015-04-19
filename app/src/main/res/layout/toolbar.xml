@@ -6,4 +6,4 @@
     android:elevation="10dp"
     android:background="?attr/colorPrimary"
     app:theme="@style/Dark.Overlay"
-    app:popupTheme="@style/Dark.Overlay.LightPopup" />
+    app:popupTheme="@style/Dark.Overlay.LightPopup"/>

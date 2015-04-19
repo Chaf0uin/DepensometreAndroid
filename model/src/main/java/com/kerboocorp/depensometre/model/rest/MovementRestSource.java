@@ -5,6 +5,7 @@ import com.kerboocorp.depensometre.common.utils.Constants;
 import com.kerboocorp.depensometre.model.MovementDataSource;
 import com.kerboocorp.depensometre.model.entities.Movement;
 import com.kerboocorp.depensometre.model.entities.MovementList;
+import com.kerboocorp.depensometre.model.entities.ResponseError;
 import com.kerboocorp.depensometre.model.entities.ResponseObject;
 import com.kerboocorp.depensometre.model.entities.ResponseType;
 import com.kerboocorp.depensometre.model.rest.api.MovementApi;
@@ -53,7 +54,7 @@ public class MovementRestSource implements MovementDataSource {
             @Override
             public void failure(RetrofitError error) {
                 System.out.printf("[DEBUG] MovementRestSource failure - " + error.getMessage());
-                BusProvider.getRestBusInstance().post(error);
+                BusProvider.getRestBusInstance().post(new ResponseError(error, ResponseType.find));
             }
         });
     }
@@ -70,7 +71,7 @@ public class MovementRestSource implements MovementDataSource {
                 @Override
                 public void failure(RetrofitError error) {
                     System.out.printf("[DEBUG] MovementRestSource failure - " + error.getMessage());
-                    BusProvider.getRestBusInstance().post(error);
+                    BusProvider.getRestBusInstance().post(new ResponseError(error, ResponseType.insert));
                 }
             });
 
@@ -84,7 +85,7 @@ public class MovementRestSource implements MovementDataSource {
                 @Override
                 public void failure(RetrofitError error) {
                     System.out.printf("[DEBUG] MovementRestSource failure - " + error.getMessage());
-                    BusProvider.getRestBusInstance().post(error);
+                    BusProvider.getRestBusInstance().post(new ResponseError(error, ResponseType.insert));
                 }
             });
         }
@@ -101,7 +102,7 @@ public class MovementRestSource implements MovementDataSource {
             @Override
             public void failure(RetrofitError error) {
                 System.out.printf("[DEBUG] MovementRestSource failure - " + error.getMessage());
-                BusProvider.getRestBusInstance().post(error);
+                BusProvider.getRestBusInstance().post(new ResponseError(error, ResponseType.delete));
             }
         });
     }

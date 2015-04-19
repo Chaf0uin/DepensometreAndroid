@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.kerboocorp.depensometre.R;
 import com.kerboocorp.depensometre.model.entities.MovementList;
 import com.kerboocorp.depensometre.mvp.presenters.LoginPresenter;
@@ -34,6 +35,8 @@ public class LoginActivity extends ActionBarActivity implements LoginView {
     EditText passwordEditText;
     @InjectView(R.id.loginButton)
     Button loginButton;
+
+    private MaterialDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,17 +78,34 @@ public class LoginActivity extends ActionBarActivity implements LoginView {
 
     @Override
     public void showLoading() {
+        progressDialog = new MaterialDialog.Builder(this)
+                .title(getString(R.string.dialog_login))
+                .content(getString(R.string.dialog_wait))
+                .progress(true, 0)
+                .show();
 
+        progressDialog.show();
     }
 
     @Override
     public void hideLoading() {
-
+        progressDialog.dismiss();
     }
 
     @Override
     public void showError(String error) {
+        new MaterialDialog.Builder(this)
+                .title(getString(R.string.error_oops))
+                .content(error)
+                .positiveText(R.string.dialog_delete_agree)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        dialog.dismiss();
+                    }
 
+                })
+                .show();
     }
 
     @Override

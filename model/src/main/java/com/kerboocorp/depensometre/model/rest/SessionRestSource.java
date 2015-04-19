@@ -4,6 +4,8 @@ import com.kerboocorp.depensometre.common.utils.BusProvider;
 import com.kerboocorp.depensometre.common.utils.Constants;
 import com.kerboocorp.depensometre.model.SessionDataSource;
 import com.kerboocorp.depensometre.model.entities.AccessToken;
+import com.kerboocorp.depensometre.model.entities.ResponseError;
+import com.kerboocorp.depensometre.model.entities.ResponseType;
 import com.kerboocorp.depensometre.model.rest.api.MovementApi;
 import com.kerboocorp.depensometre.model.rest.api.SessionApi;
 
@@ -50,7 +52,7 @@ public class SessionRestSource implements SessionDataSource {
             @Override
             public void failure(RetrofitError error) {
                 System.out.printf("[DEBUG] SessionRestSource failure - " + error.getMessage());
-                BusProvider.getRestBusInstance().post(error);
+                BusProvider.getRestBusInstance().post(new ResponseError(error, ResponseType.find));
             }
         });
     }

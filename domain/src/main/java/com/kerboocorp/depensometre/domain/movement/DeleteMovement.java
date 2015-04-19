@@ -6,19 +6,21 @@ import com.kerboocorp.depensometre.model.entities.ResponseError;
 import com.kerboocorp.depensometre.model.entities.ResponseObject;
 
 /**
- * Created by cgo on 9/04/2015.
+ * Created by chris on 12/04/15.
  */
-public interface SaveMovement extends UseCase {
+public interface DeleteMovement extends UseCase {
 
-    public void onMovementReceived(ResponseObject<Movement> response);
+    public void onMovementDeleted(ResponseObject<Movement> response);
 
     public void setMovement(Movement movement);
 
     public void setAccessToken(String accessToken);
 
-    public void saveMovement();
+    public void deleteMovement();
 
     public void sendMovementToPresenter(ResponseObject<Movement> response);
+
+    public void register();
 
     public void unRegister();
 
