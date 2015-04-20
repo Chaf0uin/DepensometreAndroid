@@ -27,6 +27,8 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.kerboocorp.depensometre.R;
 import com.kerboocorp.depensometre.model.entities.Movement;
 import com.kerboocorp.depensometre.model.entities.MovementList;
+import com.kerboocorp.depensometre.model.entities.Year;
+import com.kerboocorp.depensometre.model.entities.YearList;
 import com.kerboocorp.depensometre.mvp.presenters.MovementListPresenter;
 import com.kerboocorp.depensometre.mvp.views.MovementListView;
 import com.kerboocorp.depensometre.views.adapters.MovementAdapter;
@@ -78,6 +80,8 @@ public class MovementListActivity extends ActionBarActivity implements MovementL
     private LinearLayoutManager linearLayoutManager;
 
     private MaterialDialog progressDialog;
+
+    private YearList yearList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,6 +150,8 @@ public class MovementListActivity extends ActionBarActivity implements MovementL
             movementListPresenter.setSelectedMonth(savedInstanceState.getString("selectedMonth"));
             movementListPresenter.setSelectedYear(savedInstanceState.getString("selectedYear"));
 
+            setYearList((YearList) savedInstanceState.getSerializable("years"));
+
         }
 
         movementAdapter.setMovementListListener(movementListPresenter);
@@ -191,6 +197,11 @@ public class MovementListActivity extends ActionBarActivity implements MovementL
             bundle.putString("selectedYear", movementListPresenter.getSelectedYear());
 
         }
+
+        if (yearList != null) {
+            bundle.putSerializable("years", yearList);
+        }
+
 
     }
 
@@ -364,6 +375,33 @@ public class MovementListActivity extends ActionBarActivity implements MovementL
                 .show();
     }
 
+    @Override
+    public void setYearList(YearList yearList) {
+        this.yearList = yearList;
+
+        String[] years = new String[yearList.getYearList().size()];
+        int i = 0;
+
+        for (Year year : yearList.getYearList()) {
+            years[i] = year.getYear();
+            i++;
+        }
+
+
+        ArrayAdapter<String> adapterYear = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, years);
+        adapterYear.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        yearSpinner.setAdapter(adapterYear);
+    }
+
+    @Override
+    public boolean isYearListEmpty() {
+        if (yearList == null || yearList.getYearList().size() == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == 1) {
@@ -373,13 +411,6 @@ public class MovementListActivity extends ActionBarActivity implements MovementL
                     movementListPresenter.onMovementSaved((Movement) data.getSerializableExtra("movement"));
                 } else {
                     movementListPresenter.onMovementUpdated((Movement) data.getSerializableExtra("movement"));
-//                    Log.d("DP", "on result");
-//                    Movement movement = data.getParcelableExtra("movement");
-//                    movementAdapter.updateMovement(movement);
-//
-//                    DecimalFormat df = new DecimalFormat("##.00");
-//
-//                    totalTextView.setText(df.format(movementAdapter.getTotal()) + " €");
                 }
 
 

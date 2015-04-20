@@ -90,7 +90,7 @@ public class LoginActivity extends ActionBarActivity implements LoginView {
         new MaterialDialog.Builder(this)
                 .title(getString(R.string.error_oops))
                 .content(error)
-                .positiveText(R.string.dialog_delete_agree)
+                .positiveText(R.string.dialog_close)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {

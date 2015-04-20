@@ -2,6 +2,7 @@ package com.kerboocorp.depensometre.mvp.views;
 
 import com.kerboocorp.depensometre.model.entities.Movement;
 import com.kerboocorp.depensometre.model.entities.MovementList;
+import com.kerboocorp.depensometre.model.entities.YearList;
 
 import java.util.List;
 
@@ -51,4 +52,8 @@ public interface MovementListView extends View {
     void hideDialog();
 
     void showDeleteDialog(Movement movement);
+
+    void setYearList(YearList yearList);
+
+    boolean isYearListEmpty();
 }

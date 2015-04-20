@@ -12,6 +12,7 @@ import com.kerboocorp.depensometre.model.entities.ResponseError;
 import com.kerboocorp.depensometre.model.entities.ResponseType;
 import com.kerboocorp.depensometre.model.rest.SessionRestSource;
 import com.kerboocorp.depensometre.mvp.views.LoginView;
+import com.kerboocorp.depensometre.utils.ConnectionDetector;
 import com.squareup.otto.Subscribe;
 
 /**
@@ -33,10 +34,15 @@ public class LoginPresenter extends Presenter {
     }
 
     public void login(String email, String password) {
-        loginView.showLoading();
-        loginController.setEmailAndPassword(email, password);
-        this.email = email;
-        loginController.execute();
+        if (!ConnectionDetector.getInstance().isConnected(loginView.getContext())) {
+            loginView.showError(loginView.getContext().getString(R.string.error_no_connection));
+        } else {
+            loginView.showLoading();
+            loginController.setEmailAndPassword(email, password);
+            this.email = email;
+            loginController.execute();
+        }
+
     }
 
     @Subscribe
@@ -62,18 +68,19 @@ public class LoginPresenter extends Presenter {
 
     @Override
     public void start() {
-        if (!isRegistered) {
-            BusProvider.getUIBusInstance().register(this);
-            isRegistered = true;
-
-            loginController.register();
-        }
 
         SharedPreferences sharedPref = loginView.getContext().getSharedPreferences(loginView.getContext().getString(R.string.app_full_name), Context.MODE_PRIVATE);
         String accessToken = sharedPref.getString(loginView.getContext().getString(R.string.access_token), "");
 
         if (!accessToken.equals("")) {
             loginView.startMovementListActivity();
+        } else {
+            if (!isRegistered) {
+                BusProvider.getUIBusInstance().register(this);
+                isRegistered = true;
+
+                loginController.register();
+            }
         }
 
 

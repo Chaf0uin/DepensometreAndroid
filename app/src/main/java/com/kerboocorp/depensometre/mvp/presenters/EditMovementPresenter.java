@@ -25,6 +25,7 @@ import com.kerboocorp.depensometre.model.rest.NameRestSource;
 import com.kerboocorp.depensometre.model.rest.SessionRestSource;
 import com.kerboocorp.depensometre.mvp.views.EditMovementView;
 import com.kerboocorp.depensometre.mvp.views.LoginView;
+import com.kerboocorp.depensometre.utils.ConnectionDetector;
 import com.squareup.otto.Subscribe;
 
 import java.text.SimpleDateFormat;
@@ -66,20 +67,25 @@ public class EditMovementPresenter extends Presenter implements DatePickerDialog
     }
 
     public void saveMovement(String name, String category, String amount) {
-        editMovementView.showDialog();
 
-        currentMovement.setName(name);
-        currentMovement.setCategory(category);
-        currentMovement.setAmount(amount);
-        currentMovement.setMovementType(movementType);
-        currentMovement.setDate(dateFormat.format(calendar.getTime()));
-        saveMovementController.setMovement(currentMovement);
+        if (!ConnectionDetector.getInstance().isConnected(editMovementView.getContext())) {
+            editMovementView.showError(editMovementView.getContext().getString(R.string.error_no_connection));
+        } else {
+            editMovementView.showDialog();
 
-        SharedPreferences sharedPref = editMovementView.getContext().getSharedPreferences(editMovementView.getContext().getString(R.string.app_full_name), Context.MODE_PRIVATE);
-        String accessToken = sharedPref.getString(editMovementView.getContext().getString(R.string.access_token), "");
-        saveMovementController.setAccessToken(accessToken);
+            currentMovement.setName(name);
+            currentMovement.setCategory(category);
+            currentMovement.setAmount(amount);
+            currentMovement.setMovementType(movementType);
+            currentMovement.setDate(dateFormat.format(calendar.getTime()));
+            saveMovementController.setMovement(currentMovement);
 
-        saveMovementController.execute();
+            SharedPreferences sharedPref = editMovementView.getContext().getSharedPreferences(editMovementView.getContext().getString(R.string.app_full_name), Context.MODE_PRIVATE);
+            String accessToken = sharedPref.getString(editMovementView.getContext().getString(R.string.access_token), "");
+            saveMovementController.setAccessToken(accessToken);
+
+            saveMovementController.execute();
+        }
     }
 
     @Override
@@ -89,14 +95,17 @@ public class EditMovementPresenter extends Presenter implements DatePickerDialog
             registered = true;
         }
 
-        SharedPreferences sharedPref = editMovementView.getContext().getSharedPreferences(editMovementView.getContext().getString(R.string.app_full_name), Context.MODE_PRIVATE);
-        String accessToken = sharedPref.getString(editMovementView.getContext().getString(R.string.access_token), "");
+        if (ConnectionDetector.getInstance().isConnected(editMovementView.getContext())) {
+            SharedPreferences sharedPref = editMovementView.getContext().getSharedPreferences(editMovementView.getContext().getString(R.string.app_full_name), Context.MODE_PRIVATE);
+            String accessToken = sharedPref.getString(editMovementView.getContext().getString(R.string.access_token), "");
 
-        findCategoryListController.setAccessToken(accessToken);
-        findCategoryListController.execute();
+            findCategoryListController.setAccessToken(accessToken);
+            findCategoryListController.execute();
 
-        findNameListController.setAccessToken(accessToken);
-        findNameListController.execute();
+            findNameListController.setAccessToken(accessToken);
+            findNameListController.execute();
+        }
+
     }
 
     @Override

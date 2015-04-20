@@ -9,13 +9,17 @@ import com.kerboocorp.depensometre.common.utils.BusProvider;
 import com.kerboocorp.depensometre.domain.movement.DeleteMovement;
 import com.kerboocorp.depensometre.domain.movement.impl.DeleteMovementController;
 import com.kerboocorp.depensometre.domain.movement.impl.FindMovementListController;
+import com.kerboocorp.depensometre.domain.year.impl.FindYearListController;
 import com.kerboocorp.depensometre.model.entities.Movement;
 import com.kerboocorp.depensometre.model.entities.MovementList;
 import com.kerboocorp.depensometre.model.entities.ResponseError;
 import com.kerboocorp.depensometre.model.entities.ResponseObject;
 import com.kerboocorp.depensometre.model.entities.ResponseType;
+import com.kerboocorp.depensometre.model.entities.YearList;
 import com.kerboocorp.depensometre.model.rest.MovementRestSource;
+import com.kerboocorp.depensometre.model.rest.YearRestSource;
 import com.kerboocorp.depensometre.mvp.views.MovementListView;
+import com.kerboocorp.depensometre.utils.ConnectionDetector;
 import com.kerboocorp.depensometre.utils.MovementListListener;
 import com.squareup.otto.Subscribe;
 
@@ -36,6 +40,7 @@ public class MovementListPresenter extends Presenter implements MovementListList
     private final MovementListView movementListView;
     private FindMovementListController findMovementListController;
     private DeleteMovementController deleteMovementController;
+    private FindYearListController findYearListController;
 
     private boolean isLoading = false;
     private boolean isRegistered;
@@ -51,12 +56,14 @@ public class MovementListPresenter extends Presenter implements MovementListList
         this.movementListView = movementListView;
         findMovementListController = new FindMovementListController(MovementRestSource.getInstance(), BusProvider.getUIBusInstance());
         deleteMovementController = new DeleteMovementController(MovementRestSource.getInstance(), BusProvider.getUIBusInstance());
+        findYearListController = new FindYearListController(YearRestSource.getInstance(), BusProvider.getUIBusInstance());
     }
 
     public MovementListPresenter(MovementListView movementListView, MovementList movementList) {
         this.movementListView = movementListView;
         findMovementListController = new FindMovementListController(MovementRestSource.getInstance(), BusProvider.getUIBusInstance());
         deleteMovementController = new DeleteMovementController(MovementRestSource.getInstance(), BusProvider.getUIBusInstance());
+        findYearListController = new FindYearListController(YearRestSource.getInstance(), BusProvider.getUIBusInstance());
 
         onMovementListReceived(movementList);
     }
@@ -106,38 +113,53 @@ public class MovementListPresenter extends Presenter implements MovementListList
 
         findMovementListController.register();
         deleteMovementController.register();
+        findYearListController.register();
 
-        if (movementListView.isMovementListEmpty()) {
-
-            movementListView.showLoading();
-
-            Date now = new Date();
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(now);
-            selectedYear = String.valueOf(cal.get(Calendar.YEAR));
-            NumberFormat formatter = new DecimalFormat("00");
-            selectedMonth = formatter.format(cal.get(Calendar.MONTH) + 1);
-
+        if (movementListView.isYearListEmpty()) {
             SharedPreferences sharedPref = movementListView.getContext().getSharedPreferences(movementListView.getContext().getString(R.string.app_full_name), Context.MODE_PRIVATE);
             String accessToken = sharedPref.getString(movementListView.getContext().getString(R.string.access_token), "");
 
-            int yearIndex = 0;
-            for (int i = 0; i < movementListView.getContext().getResources().getStringArray(R.array.year).length; i++) {
-                if (selectedYear.equals(movementListView.getContext().getResources().getStringArray(R.array.year)[i])) {
-                    yearIndex = i;
+            findYearListController.setAccessToken(accessToken);
+            findYearListController.execute();
+        }
+
+        if (movementListView.isMovementListEmpty()) {
+
+            if (ConnectionDetector.getInstance().isConnected(movementListView.getContext())) {
+                movementListView.showLoading();
+
+                Date now = new Date();
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(now);
+                selectedYear = String.valueOf(cal.get(Calendar.YEAR));
+                NumberFormat formatter = new DecimalFormat("00");
+                selectedMonth = formatter.format(cal.get(Calendar.MONTH) + 1);
+
+                SharedPreferences sharedPref = movementListView.getContext().getSharedPreferences(movementListView.getContext().getString(R.string.app_full_name), Context.MODE_PRIVATE);
+                String accessToken = sharedPref.getString(movementListView.getContext().getString(R.string.access_token), "");
+
+                int yearIndex = 0;
+                for (int i = 0; i < movementListView.getContext().getResources().getStringArray(R.array.year).length; i++) {
+                    if (selectedYear.equals(movementListView.getContext().getResources().getStringArray(R.array.year)[i])) {
+                        yearIndex = i;
+                    }
                 }
+
+                movementListView.setSelectedMonthSpinner(cal.get(Calendar.MONTH), yearIndex);
+
+                titleDate = movementListView.getContext().getResources().getStringArray(R.array.month)[cal.get(Calendar.MONTH)] + " " + selectedYear;
+                movementListView.setTitle(titleDate);
+
+                movementListView.setEmail(sharedPref.getString(movementListView.getContext().getString(R.string.email), ""));
+
+                findMovementListController.setAccessToken(accessToken);
+                findMovementListController.setMonth(selectedMonth, selectedYear);
+                findMovementListController.execute();
+            } else {
+                movementListView.showError(movementListView.getContext().getString(R.string.error_no_connection));
             }
 
-            movementListView.setSelectedMonthSpinner(cal.get(Calendar.MONTH), yearIndex);
 
-            titleDate = movementListView.getContext().getResources().getStringArray(R.array.month)[cal.get(Calendar.MONTH)] + " " + selectedYear;
-            movementListView.setTitle(titleDate);
-
-            movementListView.setEmail(sharedPref.getString(movementListView.getContext().getString(R.string.email), ""));
-
-            findMovementListController.setAccessToken(accessToken);
-            findMovementListController.setMonth(selectedMonth, selectedYear);
-            findMovementListController.execute();
         } else {
             titleDate = movementListView.getContext().getResources().getStringArray(R.array.month)[Integer.parseInt(selectedMonth)-1] + " " + selectedYear;
         }
@@ -152,6 +174,7 @@ public class MovementListPresenter extends Presenter implements MovementListList
 
         findMovementListController.unRegister();
         deleteMovementController.unRegister();
+        findYearListController.unRegister();
     }
 
     public boolean isLoading() {
@@ -312,5 +335,11 @@ public class MovementListPresenter extends Presenter implements MovementListList
         }
 
         movementListView.setTitle(titleDate + " | " + formattedTotal + " €");
+    }
+
+    @Subscribe
+    public void onYearListReceived(YearList yearList) {
+        movementListView.setYearList(yearList);
+
     }
 }

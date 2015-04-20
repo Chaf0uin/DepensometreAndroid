@@ -24,6 +24,7 @@
 
 
     <string name="error_oops">Ooops :/</string>
+    <string name="error_no_connection">La connexion ne semble pas être active.</string>
     <string name="error_login">Une erreur est survenue lors de la connexion.</string>
     <string name="error_find_movements">Une erreur est survenue lors du chargement des mouvements.</string>
     <string name="error_insert_movement">Une erreur est survenue lors de la création du mouvement.</string>
